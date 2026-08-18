@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AssetTrack — School Inventory</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark brand-mark">SO</div>
+      <div><div class="name brand-name">AssetTrack</div><div class="sub brand-tagline"></div></div>
+    </div>
+    <div class="nav-item active" data-view="overview" onclick="showView('overview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Overview
+    </div>
+    <div class="nav-item dashboard-gated" data-view="inventory" onclick="showView('inventory')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7 12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+      Inventory
+    </div>
+    <div class="nav-item dashboard-gated" data-view="transfers" onclick="showView('transfers')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3 4 7l4 4M4 7h13a3 3 0 0 1 3 3v1M16 21l4-4-4-4M20 17H7a3 3 0 0 1-3-3v-1"/></svg>
+      Transfers
+    </div>
+    <div class="nav-item dashboard-gated" data-view="procurement" onclick="showView('procurement')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Procurement
+    </div>
+    <div class="nav-item dashboard-gated" data-view="repairs" onclick="showView('repairs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 1 1-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 1 5.4-5.4l-2.8 2.8-2.1-2.1Z"/></svg>
+      Repairs <span class="nav-badge hidden" id="repairs-badge">0</span>
+    </div>
+    <div class="nav-item scrap-gated hidden" data-view="scraps" onclick="showView('scraps')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+      Scraps
+    </div>
+    <div class="nav-item hidden" id="nav-team" data-view="team" onclick="showView('team')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Team Approvals <span class="nav-badge hidden" id="team-badge">0</span>
+    </div>
+    <div class="nav-section-label admin-only hidden">Setup</div>
+    <div class="nav-item admin-only hidden" data-view="departments" onclick="showView('departments')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Departments
+    </div>
+    <div class="nav-item admin-only hidden" data-view="locations" onclick="showView('locations')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      Locations
+    </div>
+    <div class="nav-item admin-only hidden" data-view="categories" onclick="showView('categories')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-8l-2-3H5a2 2 0 0 0-2 2Z"/></svg>
+      Categories
+    </div>
+    <div class="nav-item admin-only hidden" data-view="vendors" onclick="showView('vendors')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-6 7 6v12M9 21v-6h6v6"/></svg>
+      Vendors
+    </div>
+    <div class="nav-item admin-only hidden" data-view="users" onclick="showView('users')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Staff & Users
+    </div>
+    <div class="nav-item admin-only hidden" data-view="branding" onclick="showView('branding')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      Branding
+    </div>
+    <div class="nav-item dashboard-gated" data-view="reports" onclick="showView('reports')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+      Reports
+    </div>
+    <div class="nav-item manager-or-admin hidden" data-view="stocking" onclick="showView('stocking')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Stocking Plans
+    </div>
+    <div class="nav-item" data-view="petty" onclick="showView('petty')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      Petty Cash <span class="nav-badge hidden" id="petty-badge">0</span>
+    </div>
+    <div class="nav-item" data-view="profile" onclick="showView('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+      My Profile
+    </div>
+    <div class="spacer"></div>
+    <div class="sidebar-foot">
+      <div class="sidebar-user" onclick="showView('profile')">
+        <div id="sb-avatar" class="avatar" style="background:var(--navy-600)">--</div>
+        <div><div class="nm" id="sb-name">—</div><div class="role" id="sb-role">—</div></div>
+      </div>
+      <div class="logout-link" onclick="logout()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Log out
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="main">
+    <div class="topbar">
+      <div class="flex center gap-12">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="topbar-left"><h1 id="page-title">Overview</h1><div class="sub" id="page-sub">—</div></div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══ OVERVIEW ══ -->
+      <section id="view-overview">
+        <div class="card card-pad hidden" id="limited-access-banner" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div><h3>My Location</h3><div class="sub" id="my-loc-sub">You're the custodian of one location.</div></div>
+            <button class="btn btn-gold btn-sm" onclick="openRepairModal()">Report Issue</button>
+          </div>
+          <div class="table-wrap"><table id="my-loc-table"><thead><tr><th>Name</th><th>Qty</th><th>Condition</th><th>Tags</th><th></th></tr></thead><tbody></tbody></table></div>
+          <h4 style="margin:18px 0 8px;font-size:13px;color:var(--muted);">Repairs at my location</h4>
+          <div class="table-wrap"><table id="my-loc-repairs-table"><thead><tr><th>Item</th><th>Issue</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+        </div>
+
+        <div class="flex gap-8" style="margin-bottom:14px;align-items:center;">
+          <div class="sub" id="ov-date-strip" style="margin:0;font-size:13px;color:var(--muted);">—</div>
+          <button class="btn btn-ghost btn-sm" title="Refresh" onclick="loadOverview()" style="margin-left:auto;">↻ Refresh</button>
+        </div>
+
+        <!-- Stat cards — all clickable -->
+        <div class="grid-stats">
+          <div class="card stat-card" onclick="showView('inventory')" title="Go to Inventory">
+            <div class="ic" style="background:var(--info-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2"><path d="M20 7 12 3 4 7v10l8 4 8-4V7Z"/></svg></div>
+            <div class="num" id="ov-total">—</div><div class="lbl">Total items tracked</div>
+          </div>
+          <div class="card stat-card" onclick="showView('inventory')" title="Go to Inventory">
+            <div class="ic" style="background:var(--brass-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brass)" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="num" id="ov-value">—</div><div class="lbl">Total inventory value</div>
+          </div>
+          <div class="card stat-card" onclick="showView('repairs')" title="Go to Repairs">
+            <div class="ic" style="background:var(--late-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--late)" stroke-width="2"><path d="M14.7 6.3a4 4 0 1 1-5.4 5.4L3 18v3h3l6.3-6.3"/></svg></div>
+            <div class="num" id="ov-repair">—</div><div class="lbl">Under repair</div>
+          </div>
+          <div class="card stat-card" onclick="showView('inventory')" title="View low stock">
+            <div class="ic" style="background:var(--danger-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+            <div class="num" id="ov-lowstock">—</div><div class="lbl">Low stock alerts</div>
+          </div>
+          <div class="card stat-card" onclick="showView('transfers')" title="View pending approvals">
+            <div class="ic" style="background:#EEE7F8"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B4FA0" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div class="num" id="ov-pending">—</div><div class="lbl">Pending approvals</div>
+          </div>
+          <div class="card stat-card scrap-gated hidden" onclick="showView('scraps')" title="Go to Scraps">
+            <div class="ic" style="background:var(--surface-soft)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg></div>
+            <div class="num" id="ov-scrap-value">—</div><div class="lbl">Scrap value (separate)</div>
+          </div>
+        </div>
+
+        <!-- Quick review panel (admin only) -->
+        <div class="quick-review-grid admin-only hidden" id="ov-quick-review">
+          <div class="quick-review-card">
+            <div class="qr-head">
+              <span class="qr-title">⏳ Pending Transfers</span>
+              <span class="qr-badge" id="qr-transfer-count">0</span>
+            </div>
+            <div id="qr-transfers-list"></div>
+            <a class="qr-view-all" onclick="showView('transfers')">View all transfers →</a>
+          </div>
+          <div class="quick-review-card">
+            <div class="qr-head">
+              <span class="qr-title">📦 Pending Procurement</span>
+              <span class="qr-badge" id="qr-procurement-count">0</span>
+            </div>
+            <div id="qr-procurement-list"></div>
+            <a class="qr-view-all" onclick="showView('procurement')">View all procurement →</a>
+          </div>
+          <div class="quick-review-card">
+            <div class="qr-head">
+              <span class="qr-title">🔧 Open Repair Reports</span>
+              <span class="qr-badge" id="qr-repairs-count">0</span>
+            </div>
+            <div id="qr-repairs-list"></div>
+            <a class="qr-view-all" onclick="showView('repairs')">View all repairs →</a>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:20px;">
+          <div class="card card-pad">
+            <div class="section-head"><h3>Items by category</h3><div class="sub">Count and value</div></div>
+            <div id="ov-categories"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h3>Low stock alerts</h3><div class="sub">At or below reorder level</div></div>
+            <div id="ov-lowstock-list"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h3>Warranty alerts</h3><div class="sub">Expiring within 30 days</div></div>
+            <div id="ov-warranty-list"></div>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="margin-top:20px;">
+          <div class="section-head"><h3>Recent activity</h3><div class="sub">Click any item to navigate to it</div></div>
+          <div class="activity-feed" id="ov-activity"></div>
+        </div>
+      </section>
+
+      <!-- ══ INVENTORY ══ -->
+      <section id="view-inventory" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>All inventory</h3><div class="sub" id="inv-count-sub">Disposed items are tracked separately under <a onclick="showView('scraps')" style="cursor:pointer;">Scraps</a>.</div></div>
+            <button class="btn btn-gold btn-sm admin-only hidden" onclick="openAddItem()">+ Add Item</button>
+          </div>
+          <div class="flex between center" style="margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+            <div class="view-toggle">
+              <button class="view-toggle-btn active" id="vt-list" onclick="setInvView('list')" title="List view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                List
+              </button>
+              <button class="view-toggle-btn" id="vt-grid" onclick="setInvView('grid')" title="Grid view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Grid
+              </button>
+              <button class="view-toggle-btn" id="vt-compact" onclick="setInvView('compact')" title="Compact view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                Compact
+              </button>
+            </div>
+            <span class="filter-results-count" id="inv-count">—</span>
+          </div>
+          <div class="filter-bar">
+            <div class="filter-group">
+              <input class="search-input" placeholder="Search name, tag, serial, manufacturer…" id="inv-search" oninput="debouncedLoadInventory()">
+              <select id="inv-filter-location" class="select" onchange="loadInventory()"><option value="">All locations</option></select>
+              <select id="inv-filter-category" class="select" onchange="loadInventory()"><option value="">All categories</option></select>
+              <select id="inv-filter-condition" class="select" onchange="loadInventory()">
+                <option value="">All conditions</option>
+                <option value="new">New</option><option value="good">Good</option><option value="fair">Fair</option>
+                <option value="under_repair">Under Repair</option><option value="damaged">Damaged</option>
+              </select>
+              <select id="inv-filter-type" class="select" onchange="loadInventory()">
+                <option value="">Asset + Stock</option><option value="asset">Assets only</option><option value="stock">Stock only</option>
+              </select>
+            </div>
+            <div class="sort-select-wrap">
+              <select id="inv-sort" class="select" onchange="loadInventory()">
+                <option value="">Sort: default</option>
+                <option value="name">Name</option>
+                <option value="date">Purchase date</option>
+                <option value="cost">Cost</option>
+                <option value="qty">Quantity</option>
+              </select>
+              <button class="sort-dir-btn" id="inv-sort-dir" onclick="toggleSortDir()" title="Toggle sort direction">↑↓</button>
+            </div>
+          </div>
+          <!-- Active tag filters -->
+          <div id="inv-tag-filters" class="filter-tags" style="margin-bottom:12px;"></div>
+          <div id="inv-search-summary"></div>
+          <div id="inv-list-wrap" class="table-wrap">
+            <table id="inventory-table">
+              <thead><tr><th></th><th data-sort-key="name">Name<span class="sort-icon">↕</span></th><th>Category</th><th>Type</th><th>Tag / Serial</th><th>Location</th><th data-sort-key="qty">Qty<span class="sort-icon">↕</span></th><th data-sort-key="cost">Unit price<span class="sort-icon">↕</span></th><th>Condition</th><th>Tags</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="inv-grid-wrap" class="inv-grid hidden"></div>
+          <div id="inv-compact-wrap" class="hidden" style="border-radius:var(--radius);border:1px solid var(--line-soft);overflow:hidden;"></div>
+        </div>
+      </section>
+
+      <!-- ══ SCRAPS ══ -->
+      <section id="view-scraps" class="hidden">
+        <div class="card card-pad" style="margin-bottom:20px;">
+          <div class="section-head"><div><h3>Scrap valuation</h3><div class="sub">Kept separate from live inventory valuation</div></div></div>
+          <div class="grid-stats">
+            <div class="card stat-card">
+              <div class="ic" style="background:var(--surface-soft)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg></div>
+              <div class="num" id="scrap-count">—</div><div class="lbl">Scrapped items</div>
+            </div>
+            <div class="card stat-card">
+              <div class="ic" style="background:var(--surface-soft)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <div class="num" id="scrap-original-value">—</div><div class="lbl">Original value (pre-disposal)</div>
+            </div>
+            <div class="card stat-card">
+              <div class="ic" style="background:var(--brass-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brass)" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <div class="num" id="scrap-current-value">—</div><div class="lbl">Current scrap value (revalued)</div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><div><h3>Scrapped inventory</h3><div class="sub">Disposed items, with revalued (depreciated) amounts where set</div></div></div>
+          <div class="table-wrap">
+            <table id="scraps-table">
+              <thead><tr><th>Item</th><th>Category</th><th>Location</th><th>Qty</th><th>Disposed</th><th>Original value</th><th>Depreciated value</th><th>Bill</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ ITEM DETAIL ══ -->
+      <section id="view-item" class="hidden">
+        <button class="btn btn-ghost btn-sm" onclick="showView('inventory')" style="margin-bottom:16px;">← Back to inventory</button>
+        <div class="grid-2">
+          <div class="card card-pad">
+            <div class="flex gap-16" style="margin-bottom:18px;align-items:flex-start;">
+              <div id="item-photo-wrap" style="flex-shrink:0;"></div>
+              <div style="flex:1;">
+                <h3 id="item-name" style="font-family:var(--display);font-size:19px;margin:0 0 4px;">—</h3>
+                <div class="sub muted" id="item-sub">—</div>
+                <div style="margin-top:8px;" id="item-badges"></div>
+                <div style="margin-top:8px;" id="item-tags-display"></div>
+              </div>
+            </div>
+            <div class="info-list" id="item-info"></div>
+            <div class="flex gap-8 admin-only hidden" style="margin-top:18px;flex-wrap:wrap;">
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer;">
+                📷 Upload photo<input type="file" id="item-photo-input" accept="image/*" style="display:none;" onchange="uploadItemPhoto()">
+              </label>
+              <button class="btn btn-danger-ghost btn-sm" id="item-remove-photo-btn" onclick="removeItemPhoto()" style="display:none;">Remove photo</button>
+              <button class="btn btn-ghost btn-sm" onclick="openEditItem()">Edit item</button>
+              <button class="btn btn-danger-ghost btn-sm" id="item-dispose-btn" onclick="disposeItemConfirm()">Dispose to scrap</button>
+              <button class="btn btn-danger-ghost btn-sm" onclick="deleteItemConfirm()">Delete</button>
+            </div>
+          </div>
+          <div class="card card-pad">
+            <div class="section-head"><h3>Quick actions</h3></div>
+            <div class="flex gap-8" style="flex-wrap:wrap;margin-bottom:22px;">
+              <button class="btn btn-primary btn-sm" onclick="openTransferModal(CURRENT_ITEM?.id)">Request transfer</button>
+              <button class="btn btn-ghost btn-sm" onclick="openRepairModal(CURRENT_ITEM?.id)">Report an issue</button>
+              <button class="btn btn-ghost btn-sm manager-or-admin hidden" onclick="openConditionModal()">Log condition</button>
+            </div>
+            <div class="section-tabs" style="margin-bottom:16px;">
+              <div class="stab active" onclick="setItemTab('history')">Activity Log</div>
+              <div class="stab" onclick="setItemTab('purchases')">Purchase History</div>
+              <div class="stab" id="item-batches-tab" onclick="setItemTab('batches')">Stock Batches</div>
+            </div>
+            <div id="item-history"></div>
+            <div id="item-purchases" class="hidden"></div>
+            <div id="item-batches"  class="hidden"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TRANSFERS ══ -->
+      <section id="view-transfers" class="hidden">
+        <div class="tab-row" id="transfers-tabs">
+          <div class="tab active" data-status="" onclick="setTransferFilter('')">All</div>
+          <div class="tab" data-status="pending" onclick="setTransferFilter('pending')">Pending</div>
+          <div class="tab" data-status="approved" onclick="setTransferFilter('approved')">Approved</div>
+          <div class="tab" data-status="rejected" onclick="setTransferFilter('rejected')">Rejected</div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Transfer requests</h3><div class="sub">Moving items between locations requires approval</div></div>
+            <div class="flex gap-8" style="flex-wrap:wrap;">
+              <input type="date" class="select" id="tr-filter-from" onchange="loadTransfers()">
+              <input type="date" class="select" id="tr-filter-to" onchange="loadTransfers()">
+              <button class="btn btn-gold btn-sm" onclick="openTransferModal()">+ Request Transfer</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="transfers-table">
+              <thead><tr><th data-sort-key="miti">Miti<span class="sort-icon">↕</span></th><th data-sort-key="date">Date<span class="sort-icon">↕</span></th><th data-sort-key="item">Item<span class="sort-icon">↕</span></th><th>From</th><th>To</th><th>Qty</th><th>Requested by</th><th>Reason</th><th>Manager</th><th>Admin</th><th>Status</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PROCUREMENT ══ -->
+      <section id="view-procurement" class="hidden">
+        <div class="tab-row" id="procurement-tabs">
+          <div class="tab active" data-status="" onclick="setProcurementFilter('')">All</div>
+          <div class="tab" data-status="pending" onclick="setProcurementFilter('pending')">Pending</div>
+          <div class="tab" data-status="approved" onclick="setProcurementFilter('approved')">Approved</div>
+          <div class="tab" data-status="rejected" onclick="setProcurementFilter('rejected')">Rejected</div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Procurement requests</h3><div class="sub">New purchase requests with full approval trail</div></div>
+            <div class="flex gap-8" style="flex-wrap:wrap;">
+              <input type="date" class="select" id="pr-filter-from" onchange="loadProcurement()">
+              <input type="date" class="select" id="pr-filter-to" onchange="loadProcurement()">
+              <button class="btn btn-gold btn-sm" onclick="openProcurementModal()">+ Request Item</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="procurement-table">
+              <thead><tr><th data-sort-key="miti">Miti<span class="sort-icon">↕</span></th><th data-sort-key="date">Date<span class="sort-icon">↕</span></th><th data-sort-key="item">Item<span class="sort-icon">↕</span></th><th>Qty</th><th data-sort-key="cost">Est. Cost<span class="sort-icon">↕</span></th><th>Type</th><th>Requested by</th><th>Bill</th><th>Manager</th><th>Admin</th><th>Status</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ REPAIRS ══ -->
+      <section id="view-repairs" class="hidden">
+        <div class="tab-row" id="repairs-tabs">
+          <div class="tab active" data-status="" onclick="setRepairFilter('')">All</div>
+          <div class="tab" data-status="reported" onclick="setRepairFilter('reported')">Reported</div>
+          <div class="tab" data-status="in_repair" onclick="setRepairFilter('in_repair')">In Repair</div>
+          <div class="tab" data-status="repaired" onclick="setRepairFilter('repaired')">Repaired</div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Repair & maintenance requests</h3><div class="sub">Track issues from reporting to resolution</div></div>
+            <div class="flex gap-8" style="flex-wrap:wrap;">
+              <input type="date" class="select" id="rp-filter-from" onchange="loadRepairs()">
+              <input type="date" class="select" id="rp-filter-to" onchange="loadRepairs()">
+              <button class="btn btn-gold btn-sm" onclick="openRepairModal()">+ Report Issue</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="repairs-table">
+              <thead><tr><th data-sort-key="miti">Miti<span class="sort-icon">↕</span></th><th data-sort-key="date">Date<span class="sort-icon">↕</span></th><th data-sort-key="item">Item<span class="sort-icon">↕</span></th><th>Location</th><th>Issue</th><th>Priority</th><th>Reported by</th><th>Vendor</th><th>Status</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TEAM APPROVALS ══ -->
+      <section id="view-team" class="hidden">
+        <div class="tab-row">
+          <div class="tab active" id="team-tab-transfer" onclick="switchTeamTab('transfer')">Transfers</div>
+          <div class="tab" id="team-tab-procurement" onclick="switchTeamTab('procurement')">Procurement</div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-head"><div><h3 id="team-title">Transfer requests from your team</h3><div class="sub">Your decision plus the admin's decision are both required</div></div></div>
+          <div class="table-wrap"><table id="team-table"><thead id="team-thead"></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ══ DEPARTMENTS ══ -->
+      <section id="view-departments" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Departments</h3><div class="sub">Scope locations and staff by department</div></div>
+            <button class="btn btn-gold btn-sm" onclick="openAddDepartment()">+ Add Department</button>
+          </div>
+          <div class="table-wrap"><table id="departments-table"><thead><tr><th>Name</th><th>Notes</th><th>Locations</th><th>Staff</th><th></th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ══ LOCATIONS ══ -->
+      <section id="view-locations" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Locations</h3><div class="sub" id="loc-count">—</div></div>
+            <button class="btn btn-gold btn-sm" onclick="openAddLocation()">+ Add Location</button>
+          </div>
+          <div class="table-wrap"><table id="locations-table"><thead><tr><th>Name</th><th>Type</th><th>Building / Floor</th><th>Department</th><th>Custodian</th><th>Items</th><th></th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ══ CATEGORIES ══ -->
+      <section id="view-categories" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Categories</h3><div class="sub" id="cat-count">—</div></div>
+            <button class="btn btn-gold btn-sm" onclick="openAddCategory()">+ Add Category</button>
+          </div>
+          <div class="table-wrap"><table id="categories-table"><thead><tr><th>Name</th><th>Tracking type</th><th>Default unit</th><th>Items</th><th></th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ══ VENDORS ══ -->
+      <section id="view-vendors" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Vendors & suppliers</h3><div class="sub" id="ven-count">—</div></div>
+            <button class="btn btn-gold btn-sm" onclick="openAddVendor()">+ Add Vendor</button>
+          </div>
+          <div class="table-wrap"><table id="vendors-table"><thead><tr><th>Name</th><th>Contact person</th><th>Phone</th><th>Email</th><th>Supplies</th><th></th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ══ USERS ══ -->
+      <section id="view-users" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Staff & users</h3><div class="sub" id="usr-count">—</div></div>
+            <button class="btn btn-gold btn-sm" onclick="openAddUser()">+ Add User</button>
+          </div>
+          <div class="table-wrap"><table id="users-table"><thead><tr><th>Name</th><th>Role</th><th>Departments</th><th>Reports to</th><th>Dashboard</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ══ BRANDING ══ -->
+      <section id="view-branding" class="hidden">
+        <div class="card card-pad" style="max-width:560px;">
+          <div class="section-head"><div><h3>School branding</h3><div class="sub">Shown across the app, login page and exported reports</div></div></div>
+          <div class="flex gap-16" style="align-items:center;margin-bottom:18px;">
+            <div class="mark brand-mark" id="brand-logo-preview" style="width:64px;height:64px;border-radius:16px;font-size:22px;">SO</div>
+            <div>
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer;">Upload logo<input type="file" id="brand-logo-input" accept="image/*" style="display:none;" onchange="uploadBrandLogo()"></label>
+              <button class="btn btn-danger-ghost btn-sm" style="margin-left:6px;" onclick="removeBrandLogo()">Remove logo</button>
+            </div>
+          </div>
+          <div class="field"><label>School name</label><input type="text" id="brand-name" placeholder="e.g. Silver Oak School"></div>
+          <div class="field"><label>Tagline / subtitle</label><input type="text" id="brand-tagline-input" placeholder="e.g. Inventory & Asset Management"></div>
+          <button class="btn btn-primary" onclick="submitBranding()">Save branding</button>
+        </div>
+
+        <div class="card card-pad" style="max-width:560px;margin-top:20px;">
+          <div class="section-head"><div><h3>Petty cash settings</h3><div class="sub">Controls the per-expense ceiling before a formal procurement request is required</div></div></div>
+          <div class="field"><label>Petty cash limit (Rs.)</label><input type="number" id="brand-petty-limit" min="0" step="any" placeholder="e.g. 5000"></div>
+          <button class="btn btn-primary" onclick="submitPettyLimit()">Save limit</button>
+        </div>
+      </section>
+
+      <!-- ══ STOCKING PLANS ══ -->
+      <section id="view-stocking" class="hidden">
+        <div class="section-tabs">
+          <div class="stab active" data-type="annual" onclick="setStockingTab('annual')">📅 Annual Budget</div>
+          <div class="stab" data-type="weekly" onclick="setStockingTab('weekly')">📋 Weekly Stock Orders</div>
+          <div class="stab" data-type="petty" onclick="setStockingTab('petty')">💵 Petty Cash Allocations</div>
+        </div>
+
+        <!-- Live summary stats — recalculated from whatever plans are visible -->
+        <div class="grid-stats stocking-stats-grid">
+          <div class="card stat-card" style="cursor:default;">
+            <div class="ic" style="background:var(--info-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+            <div class="num" id="sk-total-budget">—</div><div class="lbl">Total budgeted</div>
+          </div>
+          <div class="card stat-card" style="cursor:default;">
+            <div class="ic" style="background:var(--brass-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brass)" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="num" id="sk-total-spent">—</div><div class="lbl">Spent so far</div>
+          </div>
+          <div class="card stat-card" style="cursor:default;">
+            <div class="ic" style="background:var(--success-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <div class="num" id="sk-total-remaining">—</div><div class="lbl">Remaining</div>
+          </div>
+          <div class="card stat-card" style="cursor:default;">
+            <div class="ic" style="background:var(--late-tint)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--late)" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+            <div class="num" id="sk-over-count">—</div><div class="lbl">Over budget</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div><h3 id="stocking-title">Annual Budget Plans</h3><div class="sub" id="stocking-sub">Fiscal year budget allocations by department</div></div>
+          <div class="flex gap-8" style="flex-wrap:wrap;">
+            <div class="tab-row" style="margin:0;" id="stocking-status-filter">
+              <div class="tab active" data-status="active" onclick="setStockingStatusFilter('active')">Active</div>
+              <div class="tab" data-status="closed" onclick="setStockingStatusFilter('closed')">Closed</div>
+              <div class="tab" data-status="" onclick="setStockingStatusFilter('')">All</div>
+            </div>
+            <button class="btn btn-gold btn-sm manager-or-admin hidden" onclick="openAddPlan()">+ Create Plan</button>
+          </div>
+        </div>
+        <div class="plan-grid" id="stocking-grid"></div>
+      </section>
+
+      <!-- ══ PETTY CASH ══ -->
+      <section id="view-petty" class="hidden">
+        <div class="card card-pad">
+          <div class="section-head">
+            <div><h3>Petty Cash Expenses</h3><div class="sub" id="petty-sub">Small day-to-day purchases · pending your review</div></div>
+            <div class="flex gap-8" style="flex-wrap:wrap;">
+              <select id="petty-filter-dept" class="select" onchange="loadPetty()"><option value="">All departments</option></select>
+              <select id="petty-filter-status" class="select" onchange="loadPetty()">
+                <option value="">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <button class="btn btn-gold btn-sm" onclick="openAddExpense()">+ Record Expense</button>
+            </div>
+          </div>
+          <div id="petty-limit-banner" class="alert-banner warning hidden" style="margin-bottom:16px;">
+            <span class="ab-icon">⚠</span>
+            <div><strong>Petty cash limit:</strong> <span id="petty-limit-text">Rs. 5,000 per expense.</span> Amounts above this require a formal procurement request.</div>
+          </div>
+          <div class="table-wrap">
+            <table id="petty-table">
+              <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Department</th><th>Amount</th><th>Plan</th><th>Receipt</th><th>Submitted by</th><th>Status</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ REPORTS ══ -->
+      <section id="view-reports" class="hidden">
+        <div class="card card-pad" style="margin-bottom:20px;">
+          <div class="section-head"><h3>Date range</h3><div class="sub">Applies to all exports and previews</div></div>
+          <div class="field-row" style="max-width:420px;">
+            <div class="field"><label>From</label><input type="date" id="rep-from" onchange="loadReportPreview()"></div>
+            <div class="field"><label>To</label><input type="date" id="rep-to" onchange="loadReportPreview()"></div>
+          </div>
+        </div>
+        <div class="reports-grid">
+          <div class="card card-pad report-card" id="rep-card-inventory" onclick="viewReportDetails('inventory')">
+            <div class="report-card-title">📦 Inventory report</div>
+            <div class="muted report-card-desc">All items with location, condition and value</div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="event.stopPropagation();exportReport('inventory')">⬇ Export Excel</button>
+          </div>
+          <div class="card card-pad report-card" id="rep-card-transfers" onclick="viewReportDetails('transfers')">
+            <div class="report-card-title">🔄 Transfer log</div>
+            <div class="muted report-card-desc">Complete transfer history with status</div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="event.stopPropagation();exportReport('transfers')">⬇ Export Excel</button>
+          </div>
+          <div class="card card-pad report-card" id="rep-card-procurement" onclick="viewReportDetails('procurement')">
+            <div class="report-card-title">🛒 Procurement log</div>
+            <div class="muted report-card-desc">Purchase requests with costs and approval trail</div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="event.stopPropagation();exportReport('procurement')">⬇ Export Excel</button>
+          </div>
+          <div class="card card-pad report-card" id="rep-card-repairs" onclick="viewReportDetails('repairs')">
+            <div class="report-card-title">🔧 Repair log</div>
+            <div class="muted report-card-desc">All maintenance events with vendor and costs</div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="event.stopPropagation();exportReport('repairs')">⬇ Export Excel</button>
+          </div>
+        </div>
+        <div class="card card-pad hidden" id="rep-preview-card" style="margin-top:20px;">
+          <div class="section-head"><h3 id="rep-preview-title">—</h3><div class="sub" id="rep-preview-sub">—</div></div>
+          <div class="table-wrap" style="max-height:480px;overflow-y:auto;">
+            <table id="rep-preview-table"><thead></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PROFILE ══ -->
+      <section id="view-profile" class="hidden">
+        <div class="grid-2">
+          <div class="card card-pad">
+            <div class="flex gap-16 profile-header-row" style="align-items:center;margin-bottom:22px;">
+              <div class="avatar-wrap">
+                <div id="profile-avatar-wrap"></div>
+                <button class="avatar-remove-btn" id="profile-avatar-remove-btn" onclick="removeProfilePhoto()" title="Remove photo">✕</button>
+              </div>
+              <div>
+                <div class="profile-name" id="profile-name">—</div>
+                <div class="muted" id="profile-role">—</div>
+                <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin-top:8px;">
+                  Change photo<input type="file" id="profile-photo-input" accept="image/*" style="display:none;" onchange="uploadProfilePhoto()">
+                </label>
+              </div>
+            </div>
+            <div class="info-list">
+              <div class="info-row"><span class="k">Email</span><span class="v" id="p-email">—</span></div>
+              <div class="info-row"><span class="k">Department(s)</span><span class="v" id="p-division">—</span></div>
+              <div class="info-row"><span class="k">Reports to</span><span class="v" id="p-manager">—</span></div>
+              <div class="info-row"><span class="k">Phone</span><span class="v" id="p-phone">—</span></div>
+              <div class="info-row"><span class="k">Account status</span><span class="v" id="p-status">—</span></div>
+              <div class="info-row"><span class="k">Custodian of</span><span class="v" id="p-locations">—</span></div>
+            </div>
+          </div>
+          <div class="card card-pad">
+            <h3 class="card-section-title">Change password</h3>
+            <div class="field"><label>Current password</label><input type="password" id="cur-password" placeholder="••••••••"></div>
+            <div class="field"><label>New password</label><input type="password" id="new-password-profile" placeholder="Min 8 characters"></div>
+            <div class="field"><label>Confirm new password</label><input type="password" id="confirm-password-profile" placeholder="Repeat new password"></div>
+            <button class="btn btn-primary" onclick="submitChangePassword()">Update password</button>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+
+    <footer class="app-footer">
+      <span>© <span id="footer-year"></span> <span class="brand-schoolname"></span>. All rights reserved.</span>
+      <span class="app-footer-credit">Powered by <strong>KutkiTech</strong></span>
+    </footer>
+  </main>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Item modal -->
+<div class="modal-backdrop hidden" id="item-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3 id="item-modal-title">Add an item</h3>
+      <button class="modal-close-btn" onclick="closeModal('item-modal')">✕</button>
+    </div>
+    <input type="hidden" id="im-id">
+    <div class="field hidden" id="im-code-field" style="margin-bottom:14px;">
+      <label>Item code <span style="font-weight:400;color:var(--muted);">(assigned automatically, cannot be changed)</span></label>
+      <input type="text" id="im-code" class="mono" disabled style="opacity:.75;">
+    </div>
+    <div class="field-row">
+      <div class="field" style="flex:2 1 240px;"><label>Item name *</label><input type="text" id="im-name" placeholder="e.g. Science Lab Microscope"></div>
+      <div class="field"><label>Tracking type</label>
+        <select id="im-tracking" onchange="toggleTrackingFields()">
+          <option value="asset">Asset (unique)</option>
+          <option value="stock">Stock / consumable</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Category</label><select id="im-category"><option value="">— Select —</option></select></div>
+      <div class="field"><label>Location</label><select id="im-location"><option value="">— Select —</option></select></div>
+      <div class="field"><label>Department</label><select id="im-department"><option value="">— Inherit from location —</option></select></div>
+    </div>
+    <div id="im-asset-fields">
+      <div class="field-row">
+        <div class="field"><label>Asset tag</label><input type="text" id="im-tag" placeholder="e.g. SOS-0042"></div>
+        <div class="field"><label>Serial number</label><input type="text" id="im-serial" placeholder="Manufacturer serial"></div>
+        <div class="field"><label>Model number</label><input type="text" id="im-model" placeholder="e.g. DM500-B"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Manufacturer</label><input type="text" id="im-manufacturer" placeholder="e.g. Olympus"></div>
+        <div class="field"><label>Color</label><input type="text" id="im-color" placeholder="e.g. Black"></div>
+        <div class="field"><label>Dimensions</label><input type="text" id="im-dimensions" placeholder="e.g. 30×20×15 cm"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Weight</label><input type="text" id="im-weight" placeholder="e.g. 1.2 kg"></div>
+      </div>
+    </div>
+    <div id="im-stock-fields">
+      <div class="field-row">
+        <div class="field"><label>Quantity</label><input type="number" id="im-quantity" value="1" min="0" step="any" oninput="updateItemCostPreview()"></div>
+        <div class="field"><label>Unit</label><input type="text" id="im-unit" placeholder="pcs, reams, litres…"></div>
+        <div class="field"><label>Min stock level</label><input type="number" id="im-minstock" min="0" step="any" placeholder="Reorder point"></div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label title="Which batch gets used up first">Stock issuing method</label>
+          <select id="im-stocking-method">
+            <option value="fifo">FIFO — First In, First Out (oldest stock issued first)</option>
+            <option value="lifo">LIFO — Last In, First Out (newest stock issued first)</option>
+          </select>
+        </div>
+        <div class="field"><label title="Suggested restock amount">Reorder quantity</label><input type="number" id="im-reorder-qty" min="0" step="any" placeholder="e.g. 20"></div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Condition</label>
+        <select id="im-condition">
+          <option value="new">New</option><option value="good">Good</option><option value="fair">Fair</option>
+          <option value="under_repair">Under Repair</option><option value="damaged">Damaged</option><option value="disposed">Disposed</option>
+        </select>
+      </div>
+      <div class="field"><label>Purchase date</label><input type="date" id="im-purchase-date"></div>
+      <div class="field"><label title="Price per single unit — not the total">Unit cost (Rs.)</label><input type="number" id="im-cost" min="0" step="any" placeholder="Price per unit" oninput="updateItemCostPreview()"></div>
+    </div>
+    <div class="field-row" id="im-cost-preview-row" style="margin-bottom:14px;">
+      <div class="muted" style="font-size:12px;" id="im-cost-preview">&nbsp;</div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Vendor / supplier</label><select id="im-vendor"><option value="">—</option></select></div>
+      <div class="field"><label>Warranty expiry</label><input type="date" id="im-warranty"></div>
+    </div>
+    <div class="field"><label>Tags <span style="font-weight:400;color:var(--muted);">(press Enter to add)</span></label>
+      <div class="tags-input-wrap" id="im-tags-input"></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="im-notes" placeholder="Any additional notes…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('item-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitItem()">Save item</button>
+    </div>
+  </div>
+</div>
+
+<!-- Procurement modal (cart-based) -->
+<div class="modal-backdrop hidden" id="procurement-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <div><h3>Request procurement</h3><p class="sub" style="margin:0;">Add one or more items to the cart, then submit together.</p></div>
+      <button class="modal-close-btn" onclick="closeModal('procurement-modal')">✕</button>
+    </div>
+
+    <!-- Source toggle: existing item restock vs new item -->
+    <div class="source-toggle">
+      <button id="pr-source-new" class="active" onclick="setProcurementSource('new')">📦 New item request</button>
+      <button id="pr-source-restock" onclick="setProcurementSource('restock')">🔄 Restock existing item</button>
+    </div>
+
+    <!-- New item fields -->
+    <div id="pr-new-fields">
+      <div class="field-row">
+        <div class="field" style="flex:2 1 180px;"><label>Item name *</label><input type="text" id="pr-name" placeholder="e.g. A4 Copy Paper, 80gsm"></div>
+        <div class="field"><label>Category</label><select id="pr-category"><option value="">—</option></select></div>
+      </div>
+    </div>
+
+    <!-- Restock: pick existing item -->
+    <div id="pr-restock-fields" class="hidden">
+      <div class="field"><label>Select existing item to restock *</label>
+        <select id="pr-existing-item" onchange="onExistingItemChange()"><option value="">— Choose item —</option></select>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field"><label>Quantity</label>
+        <div class="qty-stepper" id="pr-qty-stepper">
+          <button type="button" onclick="adjustPrQty(-1)">−</button>
+          <input type="number" id="pr-qty" value="1" min="1" step="1" oninput="updatePrCostPreview()">
+          <button type="button" onclick="adjustPrQty(1)">+</button>
+        </div>
+      </div>
+      <div class="field"><label>Unit</label><input type="text" id="pr-unit" placeholder="pcs, reams, boxes…" oninput="updatePrCostPreview()"></div>
+      <div class="field"><label title="Total estimated cost for the whole quantity being requested">Est. total cost (Rs.)</label><input type="number" id="pr-cost" min="0" step="any" placeholder="Total for this quantity" oninput="updatePrCostPreview()"></div>
+      <div class="field"><label>Preferred vendor</label><select id="pr-vendor"><option value="">—</option></select></div>
+    </div>
+    <div class="field-row" style="margin-bottom:14px;">
+      <div class="muted" style="font-size:12px;" id="pr-cost-preview">&nbsp;</div>
+    </div>
+    <div class="field">
+      <label>Link to a stocking plan <span style="font-weight:400;color:var(--muted);">(optional — counts against its budget once approved)</span></label>
+      <select id="pr-stocking-plan"><option value="">— Not linked to a plan —</option></select>
+    </div>
+
+    <button class="btn btn-outline btn-sm" onclick="addToCart()" style="margin-bottom:16px;">＋ Add to cart</button>
+
+    <!-- Cart -->
+    <div class="cart-wrap" id="pr-cart-wrap">
+      <div class="cart-head">
+        <h4>Cart (<span id="pr-cart-count">0</span> items)</h4>
+        <button class="btn btn-danger-ghost btn-xs" onclick="clearCart()">Clear all</button>
+      </div>
+      <div id="pr-cart-body"><div class="cart-empty">No items added yet. Use the form above to add items.</div></div>
+    </div>
+
+    <div class="field"><label>Justification / purpose *</label>
+      <textarea id="pr-justification" placeholder="Explain why this purchase is needed for the school…" style="min-height:90px;"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('procurement-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitProcurement()">Submit request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Transfer modal -->
+<div class="modal-backdrop hidden" id="transfer-modal">
+  <div class="modal">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3>Request a transfer</h3>
+      <button class="modal-close-btn" onclick="closeModal('transfer-modal')">✕</button>
+    </div>
+    <div class="field"><label>Item *</label><select id="tr-item" onchange="onTransferItemChange()"><option value="">— Select item —</option></select></div>
+    <div class="field"><label>Transfer to *</label><select id="tr-location"><option value="">— Select destination —</option></select></div>
+    <div class="field hidden" id="tr-qty-field"><label>Quantity to transfer</label><input type="number" id="tr-qty" min="1" placeholder="Qty"></div>
+    <div class="field"><label>Reason *</label><textarea id="tr-reason" placeholder="Why is this item being moved?"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('transfer-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitTransfer()">Submit request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Repair modal -->
+<div class="modal-backdrop hidden" id="repair-modal">
+  <div class="modal">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3>Report an issue</h3>
+      <button class="modal-close-btn" onclick="closeModal('repair-modal')">✕</button>
+    </div>
+    <div class="field"><label>Item *</label><select id="rp-item"><option value="">— Select item —</option></select></div>
+    <div class="field"><label>Issue description *</label><textarea id="rp-issue" placeholder="Describe the fault or damage in detail…"></textarea></div>
+    <div class="field"><label>Priority</label>
+      <select id="rp-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('repair-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitRepair()">Submit report</button>
+    </div>
+  </div>
+</div>
+
+<!-- Repair update modal -->
+<div class="modal-backdrop hidden" id="repair-update-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <div><h3>Update repair</h3><p class="sub" id="repair-update-sub" style="margin:0;"></p></div>
+      <button class="modal-close-btn" onclick="closeModal('repair-update-modal')">✕</button>
+    </div>
+    <input type="hidden" id="ru-id">
+    <div class="field-row">
+      <div class="field"><label>Status</label>
+        <select id="ru-status">
+          <option value="reported">Reported</option><option value="in_review">In Review</option><option value="in_repair">In Repair</option>
+          <option value="repaired">Repaired</option><option value="not_repairable">Not Repairable</option><option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="field"><label>Assigned vendor</label><select id="ru-vendor"><option value="">—</option></select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Est. cost (Rs.)</label><input type="number" id="ru-est-cost" min="0"></div>
+      <div class="field"><label>Actual cost (Rs.)</label><input type="number" id="ru-actual-cost" min="0"></div>
+    </div>
+    <div class="field"><label>Resolution notes</label><textarea id="ru-notes" placeholder="What was found? What was done?"></textarea></div>
+    <div class="field"><label>Bill / invoice (optional)</label>
+      <div id="ru-bill-upload-area" class="bill-upload-area" onclick="document.getElementById('ru-bill-input').click()">
+        <div class="upload-icon">📄</div>
+        <p>Click to upload a vendor bill or invoice</p>
+        <small>PNG, JPG, WEBP or PDF · max 256 KB (photos are auto-compressed)</small>
+      </div>
+      <input type="file" id="ru-bill-input" accept="image/*,application/pdf" style="display:none;" onchange="uploadRepairBill(this)">
+      <div class="bill-preview-row hidden" id="ru-bill-preview">
+        <span id="ru-bill-name" style="font-size:13px;font-weight:600;"></span>
+        <button class="btn btn-ghost btn-xs" onclick="viewRepairBill()">View</button>
+        <button class="btn btn-danger-ghost btn-xs" onclick="removeRepairBill()">Remove</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger-ghost" id="ru-dispose-btn" onclick="disposeRepairItemConfirm()" style="margin-right:auto;">Dispose item to scrap</button>
+      <button class="btn btn-ghost" onclick="closeModal('repair-update-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitRepairUpdate()">Save update</button>
+    </div>
+  </div>
+</div>
+
+<!-- Condition log modal -->
+<div class="modal-backdrop hidden" id="condition-modal">
+  <div class="modal modal-narrow">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3>Log condition change</h3>
+      <button class="modal-close-btn" onclick="closeModal('condition-modal')">✕</button>
+    </div>
+    <div class="field"><label>New condition</label>
+      <select id="cond-new">
+        <option value="new">New</option><option value="good">Good</option><option value="fair">Fair</option>
+        <option value="under_repair">Under Repair</option><option value="damaged">Damaged</option><option value="disposed">Disposed</option>
+      </select>
+    </div>
+    <div class="field"><label>Note</label><textarea id="cond-note" placeholder="Why is the condition changing?"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('condition-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitCondition()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receive procurement modal -->
+<div class="modal-backdrop hidden" id="receive-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <div><h3>Mark as received</h3><p class="sub" id="receive-sub" style="margin:0;"></p></div>
+      <button class="modal-close-btn" onclick="closeModal('receive-modal')">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Received at location *</label><select id="rc-location"><option value="">— Select —</option></select></div>
+      <div class="field"><label>Condition on arrival</label>
+        <select id="rc-condition"><option value="new">New</option><option value="good">Good</option></select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Asset tag (optional)</label><input type="text" id="rc-tag" placeholder="e.g. SOS-0099"></div>
+      <div class="field"><label>Serial number (optional)</label><input type="text" id="rc-serial"></div>
+    </div>
+    <!-- Photo for the new item — same field the item detail page's own "Upload photo" uses, just captured up front so it doesn't need to be re-visited afterward -->
+    <div class="field" id="rc-photo-field">
+      <label>Item photo (optional)</label>
+      <div id="rc-photo-upload-area" class="bill-upload-area" onclick="document.getElementById('rc-photo-input').click()">
+        <div class="upload-icon">📷</div>
+        <p>Click to add a photo of the item</p>
+        <small>PNG, JPG, WEBP or GIF · max 256 KB (auto-compressed)</small>
+      </div>
+      <input type="file" id="rc-photo-input" accept="image/*" style="display:none;" onchange="onReceivePhotoChange()">
+      <div class="bill-preview-row hidden" id="rc-photo-preview">
+        <span id="rc-photo-name" style="font-size:13px;font-weight:600;"></span>
+        <button class="btn btn-danger-ghost btn-xs" onclick="clearReceivePhoto()">Remove</button>
+      </div>
+    </div>
+    <!-- Bill upload for procurement receive -->
+    <div class="field"><label>Upload bill / receipt (optional)</label>
+      <div id="rc-bill-upload-area" class="bill-upload-area" onclick="document.getElementById('rc-bill-input').click()">
+        <div class="upload-icon">📄</div>
+        <p>Click to upload bill, invoice or receipt</p>
+        <small>PNG, JPG, WEBP or PDF · max 256 KB (photos are auto-compressed)</small>
+      </div>
+      <input type="file" id="rc-bill-input" accept="image/*,application/pdf" style="display:none;" onchange="onReceiveBillChange()">
+      <div class="bill-preview-row hidden" id="rc-bill-preview">
+        <span id="rc-bill-name" style="font-size:13px;font-weight:600;"></span>
+        <button class="btn btn-danger-ghost btn-xs" onclick="clearReceiveBill()">Remove</button>
+      </div>
+    </div>
+    <!-- Same optional detail fields the Add Item form has, so a brand-new
+         item can be fully described in one step here instead of receiving
+         it bare and then having to re-open Edit item afterward. Hidden
+         entirely for a restock, since the existing item already has these. -->
+    <div id="rc-details-toggle-row" class="field">
+      <button type="button" class="btn btn-ghost btn-sm" onclick="toggleReceiveDetails()">
+        <span id="rc-details-toggle-label">+ Add more details (model, manufacturer, tags…)</span>
+      </button>
+    </div>
+    <div id="rc-details-fields" class="hidden">
+      <div class="field-row">
+        <div class="field"><label>Model number</label><input type="text" id="rc-model"></div>
+        <div class="field"><label>Manufacturer</label><input type="text" id="rc-manufacturer"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Color</label><input type="text" id="rc-color"></div>
+        <div class="field"><label>Dimensions</label><input type="text" id="rc-dimensions"></div>
+        <div class="field"><label>Weight</label><input type="text" id="rc-weight"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Min stock level</label><input type="number" id="rc-minstock" min="0" step="any" placeholder="Reorder point"></div>
+        <div class="field"><label>Reorder quantity</label><input type="number" id="rc-reorder-qty" min="0" step="any" placeholder="e.g. 20"></div>
+        <div class="field"><label>Warranty expiry</label><input type="date" id="rc-warranty"></div>
+      </div>
+      <div class="field"><label>Tags</label>
+        <div id="rc-tags-input"></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="rc-notes" placeholder="Any additional notes…"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('receive-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitReceive()">Add to inventory</button>
+    </div>
+  </div>
+</div>
+
+<!-- Location modal -->
+<div class="modal-backdrop hidden" id="location-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3 id="location-modal-title">Add a location</h3>
+      <button class="modal-close-btn" onclick="closeModal('location-modal')">✕</button>
+    </div>
+    <input type="hidden" id="loc-id">
+    <div class="field-row">
+      <div class="field" style="flex:2 1 180px;"><label>Name *</label><input type="text" id="loc-name" placeholder="e.g. Physics Lab – Room 204"></div>
+      <div class="field"><label>Type</label>
+        <select id="loc-type">
+          <option value="Classroom">Classroom</option><option value="Lab">Lab</option><option value="Office">Office</option>
+          <option value="Storeroom">Storeroom</option><option value="Library">Library</option><option value="Gym">Gym</option>
+          <option value="Hall">Hall</option><option value="Room">Room</option><option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Building</label><input type="text" id="loc-building" placeholder="e.g. Block A"></div>
+      <div class="field"><label>Floor</label><input type="text" id="loc-floor" placeholder="e.g. Ground floor"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Department</label><select id="loc-department"><option value="">Unassigned (shared)</option></select></div>
+      <div class="field"><label>Custodian</label><select id="loc-custodian"><option value="">Unassigned</option></select></div>
+    </div>
+    <div class="checkbox-row"><input type="checkbox" id="loc-shared-access"><span>Shared access — visible to staff from all departments</span></div>
+    <div class="field"><label>Notes</label><textarea id="loc-notes" placeholder="Any relevant notes…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('location-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitLocation()">Save location</button>
+    </div>
+  </div>
+</div>
+
+<!-- Department modal -->
+<div class="modal-backdrop hidden" id="department-modal">
+  <div class="modal modal-narrow">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3 id="department-modal-title">Add a department</h3>
+      <button class="modal-close-btn" onclick="closeModal('department-modal')">✕</button>
+    </div>
+    <input type="hidden" id="dep-id">
+    <div class="field"><label>Name *</label><input type="text" id="dep-name" placeholder="e.g. Science Department"></div>
+    <div class="field"><label>Notes</label><textarea id="dep-notes"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('department-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitDepartment()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category modal -->
+<div class="modal-backdrop hidden" id="category-modal">
+  <div class="modal modal-narrow">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3 id="category-modal-title">Add a category</h3>
+      <button class="modal-close-btn" onclick="closeModal('category-modal')">✕</button>
+    </div>
+    <input type="hidden" id="cat-id">
+    <div class="field"><label>Name *</label><input type="text" id="cat-name" placeholder="e.g. Lab Equipment"></div>
+    <div class="field-row">
+      <div class="field"><label>Tracking type</label>
+        <select id="cat-tracking"><option value="asset">Asset</option><option value="stock">Stock</option></select>
+      </div>
+      <div class="field"><label>Default unit</label><input type="text" id="cat-unit" placeholder="pcs, reams…"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('category-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitCategory()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Vendor modal -->
+<div class="modal-backdrop hidden" id="vendor-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3 id="vendor-modal-title">Add a vendor</h3>
+      <button class="modal-close-btn" onclick="closeModal('vendor-modal')">✕</button>
+    </div>
+    <input type="hidden" id="ven-id">
+    <div class="field"><label>Vendor name *</label><input type="text" id="ven-name" placeholder="e.g. Nepal Stationery House"></div>
+    <div class="field-row">
+      <div class="field"><label>Contact person</label><input type="text" id="ven-contact"></div>
+      <div class="field"><label>Phone</label><input type="text" id="ven-phone"></div>
+      <div class="field"><label>Email</label><input type="email" id="ven-email"></div>
+    </div>
+    <div class="field"><label>Address</label><input type="text" id="ven-address"></div>
+    <div class="field"><label>What do they supply?</label><input type="text" id="ven-supplies" placeholder="e.g. Lab reagents, stationery, IT equipment"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('vendor-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitVendor()">Save vendor</button>
+    </div>
+  </div>
+</div>
+
+<!-- User modal -->
+<div class="modal-backdrop hidden" id="user-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3 id="user-modal-title">Add a user</h3>
+      <button class="modal-close-btn" onclick="closeModal('user-modal')">✕</button>
+    </div>
+    <input type="hidden" id="usr-id">
+    <div class="field-row">
+      <div class="field"><label>Full name *</label><input type="text" id="usr-name"></div>
+      <div class="field"><label>Email *</label><input type="email" id="usr-email"></div>
+      <div class="field"><label>Phone</label><input type="text" id="usr-phone"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Role</label>
+        <select id="usr-role">
+          <option value="staff">Staff</option><option value="manager">Manager / HOD</option><option value="admin">Administrator</option>
+        </select>
+      </div>
+      <div class="field"><label>Reports to (manager)</label><select id="usr-manager"><option value="">No manager</option></select></div>
+      <div class="field"><label>Home location</label><select id="usr-location"><option value="">—</option></select></div>
+    </div>
+    <div class="field"><label>Departments</label><div class="checkbox-list" id="usr-departments"></div></div>
+    <div class="field" id="usr-status-field" style="display:none;">
+      <label>Status</label>
+      <select id="usr-status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+    </div>
+    <div class="field"><label>Dashboard access override</label>
+      <select id="usr-dashboard-access">
+        <option value="">Auto (based on location count)</option>
+        <option value="granted">Always grant full dashboard</option>
+        <option value="denied">Always limit to single location</option>
+      </select>
+    </div>
+    <div class="field"><label>Scrap access override</label>
+      <select id="usr-scrap-access">
+        <option value="">Auto (managers/admins only)</option>
+        <option value="granted">Grant access to view &amp; manage Scraps</option>
+        <option value="denied">Deny access to Scraps</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('user-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitUser()">Save user</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stocking plan modal -->
+<div class="modal-backdrop hidden" id="plan-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3 id="plan-modal-title">Create a stocking plan</h3>
+      <button class="modal-close-btn" onclick="closeModal('plan-modal')">✕</button>
+    </div>
+    <input type="hidden" id="pln-type">
+    <div class="field"><label>Title *</label><input type="text" id="pln-title" placeholder="e.g. FY 2083/84 Science Department Budget"></div>
+    <div class="field-row">
+      <div class="field"><label>Department</label><select id="pln-department"><option value="">All departments</option></select></div>
+      <div class="field"><label>Budget (Rs.)</label><input type="number" id="pln-budget" min="0" placeholder="0.00"></div>
+    </div>
+    <div class="field-row" id="pln-annual-fields">
+      <div class="field"><label>Fiscal year</label><input type="text" id="pln-fiscal-year" placeholder="e.g. 2083/84"></div>
+    </div>
+    <div class="field-row hidden" id="pln-weekly-fields">
+      <div class="field"><label>Week number</label><input type="number" id="pln-week-number" min="1" max="53" placeholder="e.g. 12"></div>
+      <div class="field"><label>Week start date</label><input type="date" id="pln-week-start"></div>
+    </div>
+    <div class="field"><label>Description</label><textarea id="pln-description" placeholder="What does this plan cover?"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('plan-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitPlan()">Create plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stocking plan DETAIL modal — interactive, dynamic view of one plan -->
+<div class="modal-backdrop hidden" id="plan-detail-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:6px;">
+      <div class="flex center gap-8">
+        <span id="pd-type-badge" class="plan-type-badge">Annual</span>
+        <span id="pd-status-badge" class="badge badge-active">Active</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('plan-detail-modal')">✕</button>
+    </div>
+    <h3 id="pd-title" style="margin:2px 0 4px;">—</h3>
+    <p class="sub" id="pd-sub" style="margin:0 0 18px;">—</p>
+
+    <!-- Live budget gauge -->
+    <div class="card card-pad" style="margin-bottom:18px;background:var(--surface-soft);">
+      <div class="flex between center" style="margin-bottom:10px;">
+        <span style="font-size:12.5px;font-weight:700;color:var(--muted);">BUDGET UTILIZATION</span>
+        <span id="pd-pct" style="font-size:13px;font-weight:700;">0%</span>
+      </div>
+      <div class="progress-bar" style="height:12px;"><div class="fill" id="pd-progress-fill" style="width:0%;"></div></div>
+      <div class="budget-labels" style="margin-top:10px;">
+        <span id="pd-spent" class="spent">Rs. 0 spent</span>
+        <span id="pd-budget">of Rs. 0 budget</span>
+      </div>
+      <div id="pd-remaining-row" class="flex between center" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft);">
+        <span style="font-size:12.5px;color:var(--muted);">Remaining</span>
+        <span id="pd-remaining" style="font-size:14px;font-weight:700;">Rs. 0</span>
+      </div>
+      <div id="pd-overbudget-warning" class="alert-banner danger hidden" style="margin-top:12px;">
+        <span class="ab-icon">⚠</span>
+        <div>This plan is over budget. Review linked requests below or increase the allocation.</div>
+      </div>
+    </div>
+
+    <!-- Time / period context — differs per plan type -->
+    <div id="pd-period-context" class="card card-pad" style="margin-bottom:18px;"></div>
+
+    <!-- Linked activity — procurement (annual/weekly) or petty expenses (petty) -->
+    <div class="section-head" style="margin-bottom:10px;">
+      <div><h3 style="font-size:14.5px;" id="pd-activity-title">Linked requests</h3><div class="sub" id="pd-activity-sub">—</div></div>
+    </div>
+    <div id="pd-activity-list" style="max-height:280px;overflow-y:auto;margin-bottom:18px;"></div>
+
+    <!-- Admin quick actions -->
+    <div class="modal-section-sep"></div>
+    <div class="flex between center" style="flex-wrap:wrap;gap:10px;">
+      <div class="flex gap-8 manager-or-admin hidden" id="pd-admin-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openEditPlanBudget()">Edit budget</button>
+        <button class="btn btn-ghost btn-sm" id="pd-toggle-status-btn" onclick="togglePlanStatus()">Close plan</button>
+        <button class="btn btn-danger-ghost btn-sm admin-only hidden" onclick="deletePlanFromDetail()">Delete</button>
+      </div>
+      <button class="btn btn-gold btn-sm" id="pd-new-request-btn" onclick="startRequestFromPlan()">+ New request against this plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit plan budget modal (lightweight, opened from the detail view) -->
+<div class="modal-backdrop hidden" id="plan-budget-modal">
+  <div class="modal modal-narrow">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3>Edit budget</h3>
+      <button class="modal-close-btn" onclick="closeModal('plan-budget-modal')">✕</button>
+    </div>
+    <input type="hidden" id="pbg-id">
+    <div class="field"><label>Budget (Rs.)</label><input type="number" id="pbg-budget" min="0" placeholder="0.00"></div>
+    <div class="field-hint" id="pbg-spent-hint" style="margin-bottom:8px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('plan-budget-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitPlanBudget()">Save budget</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Petty expense modal -->
+<div class="modal-backdrop hidden" id="expense-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3>Record a petty cash expense</h3>
+      <button class="modal-close-btn" onclick="closeModal('expense-modal')">✕</button>
+    </div>
+    <div class="alert-banner info" style="margin-bottom:16px;">
+      <span class="ab-icon">ℹ</span>
+      <div>Petty cash is for small, immediate purchases only. Amounts above <strong id="pe-limit-text">Rs. 5,000</strong> require a formal procurement request instead.</div>
+    </div>
+    <div class="field-row">
+      <div class="field" style="flex:2 1 200px;"><label>Description *</label><input type="text" id="pe-description" placeholder="e.g. Chalk, markers and cleaning supplies"></div>
+      <div class="field"><label>Amount (Rs.) *</label><input type="number" id="pe-amount" min="0" placeholder="0.00"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Category</label>
+        <select id="pe-category">
+          <option value="Stationery">Stationery</option><option value="Cleaning">Cleaning</option>
+          <option value="Refreshments">Refreshments</option><option value="Repairs">Minor repairs</option>
+          <option value="Transport">Transport</option><option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Department</label><select id="pe-department"><option value="">—</option></select></div>
+      <div class="field"><label>Date</label><input type="date" id="pe-date"></div>
+    </div>
+    <div class="field"><label>Linked stocking plan (optional)</label><select id="pe-plan"><option value="">— None —</option></select></div>
+    <div class="field"><label>Upload receipt (optional)</label>
+      <div id="pe-receipt-upload-area" class="bill-upload-area" onclick="document.getElementById('pe-receipt-input').click()">
+        <div class="upload-icon">🧾</div>
+        <p>Click to upload receipt</p>
+        <small>PNG, JPG, WEBP or PDF · max 256 KB (photos are auto-compressed)</small>
+      </div>
+      <input type="file" id="pe-receipt-input" accept="image/*,application/pdf" style="display:none;" onchange="onExpenseReceiptChange()">
+      <div class="bill-preview-row hidden" id="pe-receipt-preview">
+        <span id="pe-receipt-name" style="font-size:13px;font-weight:600;"></span>
+        <button class="btn btn-danger-ghost btn-xs" onclick="clearExpenseReceipt()">Remove</button>
+      </div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="pe-notes" placeholder="Any additional context…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('expense-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitExpense()">Submit expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bill viewer modal -->
+<div class="modal-backdrop hidden" id="bill-viewer-modal">
+  <div class="modal modal-wide">
+    <div class="flex between center" style="margin-bottom:18px;">
+      <h3>Bill / Receipt</h3>
+      <button class="modal-close-btn" onclick="closeModal('bill-viewer-modal')">✕</button>
+    </div>
+    <div style="text-align:center;">
+      <img id="bill-viewer-img" src="" style="max-width:100%;max-height:60vh;border-radius:10px;display:none;">
+      <iframe id="bill-viewer-pdf" src="" style="width:100%;height:60vh;border:none;border-radius:10px;display:none;"></iframe>
+    </div>
+    <div class="modal-actions" style="margin-top:18px;">
+      <a id="bill-viewer-download" href="" target="_blank" class="btn btn-ghost btn-sm">⬇ Open in new tab</a>
+      <button class="btn btn-danger-ghost btn-sm" id="bill-viewer-delete-btn" onclick="confirmDeleteViewerBill()">Remove bill</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

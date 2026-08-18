@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AssetTrack — School Inventory</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.auth-card .forgot-link { text-align:right; margin:-12px 0 18px; }
+.auth-card .forgot-link a { font-size:12.5px; color:var(--navy-600); cursor:pointer; font-weight:600; }
+.auth-card .forgot-link a:hover { text-decoration:underline; }
+.pwd-toggle-row { position:relative; }
+.pwd-toggle-row input { padding-right:40px; }
+.pwd-toggle-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%); border:none; background:none; cursor:pointer; color:var(--muted); padding:4px; }
+.field label.label-icon { display:flex; align-items:center; gap:6px; }
+.field label.label-icon svg { width:14px; height:14px; flex-shrink:0; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="auth-shell">
+  <div class="auth-split">
+    <!-- ── Left panel ── -->
+    <div class="auth-left">
+      <div class="auth-left-noise"></div>
+      <div class="auth-left-top">
+        <div class="auth-brand">
+          <div class="mark brand-mark" id="sidebar-logo-left">SO</div>
+          <div>
+            <div class="name brand-name">AssetTrack</div>
+            <div class="sub brand-tagline brand-schoolname"></div>
+          </div>
+        </div>
+      </div>
+      <div class="auth-left-mid">
+        <div class="eyebrow">— SCHOOL INVENTORY & ASSET MANAGEMENT</div>
+        <h1>Every item, every room,<br>one clear picture.</h1>
+        <p>A single place to track assets and stock, route transfers, repairs and procurement — purpose-built for school campuses.</p>
+      </div>
+      <div class="auth-left-stats">
+        <div class="stat"><div class="num" id="stat-items">—</div><div class="lbl">ITEMS TRACKED</div></div>
+        <div class="stat"><div class="num" id="stat-locations">—</div><div class="lbl">LOCATIONS</div></div>
+        <div class="stat"><div class="num" id="stat-staff">—</div><div class="lbl">STAFF ON ROLL</div></div>
+      </div>
+    </div>
+
+    <!-- ── Right panel ── -->
+    <div class="auth-right">
+      <div class="auth-card">
+
+        <!-- STEP 1 — Login -->
+        <div class="auth-step active" id="step-login">
+          <div class="auth-brand" style="margin-bottom:0;">
+            <div class="mark brand-mark" id="card-logo" style="width:48px;height:48px;font-size:15px;border-radius:14px;">SO</div>
+            <div style="display:flex;flex-direction:column;justify-content:center;">
+              <div class="name" style="line-height:1.2;">AssetTrack</div>
+              <div class="sub brand-schoolname" style="font-size:11px;line-height:1.3;"></div>
+            </div>
+          </div>
+          <h2>Welcome back</h2>
+          <p class="sub">Sign in to manage school inventory, transfers and requests.</p>
+          <div class="auth-error" id="login-error"></div>
+          <div class="field">
+            <label class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>Work email</label>
+            <input type="email" id="login-email" placeholder="firstname.lastname@school.edu.np" autocomplete="username">
+          </div>
+          <div class="field">
+            <label class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Password</label>
+            <div class="pwd-toggle-row">
+              <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+              <button type="button" class="pwd-toggle-btn" onclick="togglePwd('login-password',this)" title="Show/hide password">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="forgot-link"><a onclick="showStep('forgot')">Forgot password?</a></div>
+          <button class="btn btn-primary btn-block" onclick="doLogin()" id="login-btn">Sign in</button>
+          <p class="auth-card-foot brand-fulltagline"></p>
+        </div>
+
+        <!-- STEP 2 — Forgot: enter email -->
+        <div class="auth-step" id="step-forgot">
+          <a class="auth-back-link" onclick="showStep('login')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to sign in
+          </a>
+          <h2>Reset password</h2>
+          <p class="sub">Enter your work email and we'll send a one-time code.</p>
+          <div class="auth-error"   id="forgot-error"></div>
+          <div class="auth-success" id="forgot-success"></div>
+          <div class="field">
+            <label class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>Work email</label>
+            <input type="email" id="forgot-email" placeholder="firstname.lastname@school.edu.np">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="doForgot()" id="forgot-btn">Send OTP</button>
+        </div>
+
+        <!-- STEP 3 — Enter OTP -->
+        <div class="auth-step" id="step-otp">
+          <a class="auth-back-link" onclick="showStep('forgot')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Change email
+          </a>
+          <h2>Enter OTP</h2>
+          <p class="sub">We sent a 6-digit code to <strong id="otp-email-display"></strong>. It expires in 10 minutes.</p>
+          <div class="auth-error" id="otp-error"></div>
+          <div class="field">
+            <label>6-digit OTP</label>
+            <input type="text" id="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center;font-size:24px;font-weight:700;letter-spacing:6px;padding:12px;">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="doVerifyOtp()" id="otp-btn">Verify OTP</button>
+          <p class="otp-resend">Didn't receive it? <a onclick="doForgot(true)">Resend OTP</a></p>
+        </div>
+
+        <!-- STEP 4 — New password -->
+        <div class="auth-step" id="step-newpwd">
+          <h2>Set new password</h2>
+          <p class="sub">OTP verified. Choose a strong new password for your account.</p>
+          <div class="auth-error"   id="newpwd-error"></div>
+          <div class="auth-success" id="newpwd-success"></div>
+          <div class="field">
+            <label class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>New password</label>
+            <div class="pwd-toggle-row">
+              <input type="password" id="new-password" placeholder="Min 8 characters">
+              <button type="button" class="pwd-toggle-btn" onclick="togglePwd('new-password',this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Confirm password</label>
+            <input type="password" id="confirm-password" placeholder="Repeat new password">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="doResetPassword()" id="newpwd-btn">Set password</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer app-footer-auth">
+    <span>© <span id="footer-year"></span> <span class="brand-schoolname"></span>. All rights reserved.</span>
+    <span class="app-footer-credit">Powered by <strong>KutkiTech</strong></span>
+  </footer>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+// ── Branding ──
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+api('/api/settings/public', { cache: 'no-store' }).then(data => {
+  const s = data.settings;
+  document.title = `AssetTrack — ${s.schoolName}`;
+  document.querySelectorAll('.brand-schoolname').forEach(el => el.textContent = s.schoolName);
+  document.querySelectorAll('.brand-fulltagline').forEach(el => el.textContent = s.tagline || '');
+  setBrandMarks('.brand-mark', s.schoolName, s.hasLogo);
+  if (data.stats) {
+    document.getElementById('stat-items').textContent     = data.stats.itemCount;
+    document.getElementById('stat-locations').textContent = data.stats.locationCount;
+    document.getElementById('stat-staff').textContent     = data.stats.staffCount;
+  }
+}).catch(()=>{});
+
+// Auto-redirect if already signed in
+api('/api/auth/me').then(()=>{ window.location.href='/dashboard.html'; }).catch(()=>{});
+
+// ── Helpers ──
+function showStep(name) {
+  document.querySelectorAll('.auth-step').forEach(el => el.classList.remove('active'));
+  document.getElementById('step-' + name).classList.add('active');
+}
+function setError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.classList.toggle('show', !!msg);
+}
+function setSuccess(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.classList.toggle('show', !!msg);
+}
+function setBusy(btnId, busy, label) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = busy;
+  btn.innerHTML = busy ? '<span class="btn-spinner"></span>Please wait…' : label;
+}
+function togglePwd(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  } else {
+    input.type = 'password';
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  }
+}
+
+// ── Login ──
+async function doLogin() {
+  setError('login-error', '');
+  setBusy('login-btn', true, 'Sign in');
+  try {
+    await api('/api/auth/login', {
+      method:'POST', body:JSON.stringify({
+        email: document.getElementById('login-email').value,
+        password: document.getElementById('login-password').value
+      })
+    });
+    window.location.href = '/dashboard.html';
+  } catch(err) {
+    setError('login-error', err.message);
+    setBusy('login-btn', false, 'Sign in');
+  }
+}
+document.getElementById('login-password').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-password').focus(); });
+
+// ── Forgot password ──
+let _forgotEmail = '';
+async function doForgot(isResend) {
+  const emailEl = document.getElementById('forgot-email');
+  const email   = (isResend ? _forgotEmail : emailEl.value).trim();
+  if (!email) { setError('forgot-error','Enter your email address.'); return; }
+  setError('forgot-error',''); setSuccess('forgot-success','');
+  setBusy('forgot-btn', true, 'Send OTP');
+  try {
+    await api('/api/auth/forgot-password', { method:'POST', body:JSON.stringify({ email }) });
+    _forgotEmail = email;
+    document.getElementById('otp-email-display').textContent = email;
+    setSuccess('forgot-success', isResend ? 'A new OTP has been sent.' : '');
+    showStep('otp');
+    document.getElementById('otp-input').value = '';
+    document.getElementById('otp-input').focus();
+  } catch(err) {
+    setError('forgot-error', err.message);
+  } finally {
+    setBusy('forgot-btn', false, 'Send OTP');
+  }
+}
+
+// ── Verify OTP ──
+async function doVerifyOtp() {
+  const otp = document.getElementById('otp-input').value.trim();
+  if (otp.length !== 6) { setError('otp-error','Enter the 6-digit OTP.'); return; }
+  setError('otp-error','');
+  setBusy('otp-btn', true, 'Verify OTP');
+  try {
+    await api('/api/auth/verify-otp', { method:'POST', body:JSON.stringify({ email:_forgotEmail, otp }) });
+    showStep('newpwd');
+    document.getElementById('new-password').focus();
+  } catch(err) {
+    setError('otp-error', err.message);
+  } finally {
+    setBusy('otp-btn', false, 'Verify OTP');
+  }
+}
+document.getElementById('otp-input').addEventListener('input', e => {
+  if (e.target.value.replace(/\D/g,'').length === 6) doVerifyOtp();
+});
+
+// ── Reset password ──
+async function doResetPassword() {
+  const pwd = document.getElementById('new-password').value;
+  const cnf = document.getElementById('confirm-password').value;
+  if (pwd.length < 8) { setError('newpwd-error','Password must be at least 8 characters.'); return; }
+  if (pwd !== cnf)    { setError('newpwd-error','Passwords do not match.'); return; }
+  setError('newpwd-error','');
+  setBusy('newpwd-btn', true, 'Set password');
+  try {
+    await api('/api/auth/reset-password', { method:'POST', body:JSON.stringify({ newPassword:pwd }) });
+    setSuccess('newpwd-success','Password updated! Redirecting to sign in…');
+    setTimeout(()=>showStep('login'), 1800);
+  } catch(err) {
+    setError('newpwd-error', err.message);
+  } finally {
+    setBusy('newpwd-btn', false, 'Set password');
+  }
+}
+</script>
+</body>
+</html>
