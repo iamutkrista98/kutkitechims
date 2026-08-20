@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AssetTrack — School Inventory</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icons/favicon.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#12204A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AssetTrack">
 <link rel="stylesheet" href="css/style.css">
 <style>
 .auth-card .forgot-link { text-align:right; margin:-12px 0 18px; }
@@ -74,6 +81,10 @@
           </div>
           <div class="forgot-link"><a onclick="showStep('forgot')">Forgot password?</a></div>
           <button class="btn btn-primary btn-block" onclick="doLogin()" id="login-btn">Sign in</button>
+          <button class="btn btn-ghost btn-block pwa-install-btn hidden" style="margin-top:10px;" onclick="triggerPwaInstall()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Install app
+          </button>
           <p class="auth-card-foot brand-fulltagline"></p>
         </div>
 

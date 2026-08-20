@@ -333,6 +333,36 @@ once a specific code path (like a file upload) is exercised.
 
 ---
 
+---
+
+## Progressive Web App (Installable)
+
+AssetTrack can be installed as an app on desktop and mobile — an "Install
+app" button appears in the sidebar (once signed in) and on the login page
+once the browser determines the app is installable. Once installed, it
+opens in its own window/icon without browser chrome, same as a native app.
+
+- The install icon uses the school's uploaded logo automatically (falls
+  back to a generic AssetTrack icon if no logo has been uploaded yet) —
+  see `GET /manifest.json` in `server.js`, which is generated per-request
+  rather than a static file for exactly this reason.
+- **Requires HTTPS.** Browsers only offer installability over a secure
+  context (or `localhost` in development) — this is a browser platform
+  requirement, not something this app can override. If the install button
+  never appears in production, confirm the site is actually being served
+  over `https://`, not `http://`.
+- iOS Safari has no programmatic install prompt at all (Apple platform
+  limitation) — tapping the install button there shows instructions for
+  the manual Share → "Add to Home Screen" flow instead.
+- `public/sw.js` is a minimal service worker that only caches the static
+  app shell (HTML/CSS/JS/icons) for faster repeat loads. It deliberately
+  never caches anything under `/api/` — inventory data, sessions, and
+  approvals are per-user and constantly changing, so caching them would
+  serve stale or incorrect data rather than just being a minor
+  inconvenience.
+
+---
+
 ## Security Notes
 
 - Change `SESSION_SECRET` to a unique random value per installation

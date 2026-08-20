@@ -583,6 +583,40 @@ app.post('/api/auth/change-password', requireAuth, async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// PWA manifest — generated per-request (not a static file) so the app name
+// and icon reflect each school's actual branding: if a logo has been
+// uploaded, it's used as the install icon; otherwise the bundled generic
+// AssetTrack icon is used. Maskable icons are always the bundled generic
+// ones regardless, since an arbitrary uploaded logo isn't guaranteed to be
+// safe-zone-padded the way a maskable icon needs to be.
+app.get('/manifest.json', async (req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    const settings = await db.getSettings();
+    const name = settings.schoolName ? `AssetTrack — ${settings.schoolName}` : 'AssetTrack';
+    const icons = settings.hasLogo
+      ? [
+          { src: `/api/images/logo?t=${Date.now()}`, sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: `/api/images/logo?t=${Date.now()}`, sizes: '512x512', type: 'image/png', purpose: 'any' }
+        ]
+      : [
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' }
+        ];
+    icons.push(
+      { src: '/icons/icon-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+      { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+    );
+    res.json({
+      name, short_name: 'AssetTrack', description: 'School inventory and asset management',
+      start_url: '/dashboard.html', id: '/dashboard.html', scope: '/',
+      display: 'standalone', background_color: '#ffffff', theme_color: '#12204A',
+      orientation: 'any', icons
+    });
+  } catch (err) { sendError(res, req, err); }
+});
+
+// ---------------------------------------------------------------------------
 // Settings / branding
 // ---------------------------------------------------------------------------
 app.get('/api/settings/public', async (req, res) => {

@@ -455,3 +455,62 @@ function setBrandMarks(selector, schoolName, hasLogo) {
     img.src = src;
   });
 }
+
+// ── PWA install support ──
+// Registers the service worker (required by Chrome/Edge before they'll
+// offer an install prompt at all) and captures the browser's
+// beforeinstallprompt event so an in-app "Install app" button can trigger
+// it on demand, rather than relying on the browser's own address-bar icon
+// (which people often don't notice). Safe to call on every page load —
+// registration is idempotent, and the button-wiring is a no-op if no
+// install button exists on the current page (e.g. once already installed).
+let deferredInstallPrompt = null;
+
+function setupPwaInstall() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Registration failing (e.g. served over plain HTTP in some dev
+      // setups) shouldn't break the app — installability just won't be
+      // offered, everything else still works normally.
+    });
+  }
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    // Stop Chrome's default mini-infobar so the in-app button is the one
+    // consistent way to install, matching the rest of the UI's styling.
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    document.querySelectorAll('.pwa-install-btn').forEach(btn => btn.classList.remove('hidden'));
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    document.querySelectorAll('.pwa-install-btn').forEach(btn => btn.classList.add('hidden'));
+  });
+
+  // Already running as an installed app (standalone display mode) — no
+  // point ever showing an install button.
+  const alreadyInstalled = window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (alreadyInstalled) {
+    document.querySelectorAll('.pwa-install-btn').forEach(btn => btn.classList.add('hidden'));
+  }
+}
+
+async function triggerPwaInstall() {
+  if (!deferredInstallPrompt) {
+    // No captured prompt — most likely iOS Safari, which has no
+    // programmatic install API at all and only supports the manual
+    // Share → "Add to Home Screen" flow.
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    toast(isIOS
+      ? 'To install: tap the Share icon in Safari, then "Add to Home Screen".'
+      : 'Installing isn\u2019t available in this browser yet — look for an install icon in the address bar, or use the browser menu.', 'default', 6000);
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  document.querySelectorAll('.pwa-install-btn').forEach(btn => btn.classList.add('hidden'));
+}
+
+setupPwaInstall();
