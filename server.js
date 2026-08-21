@@ -608,7 +608,7 @@ app.get('/manifest.json', async (req, res) => {
       { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
     );
     res.json({
-      name, short_name: 'AssetTrack', description: 'School inventory and asset management',
+      name, short_name: (settings.schoolName || 'AssetTrack').slice(0, 30), description: 'School inventory and asset management',
       start_url: '/dashboard.html', id: '/dashboard.html', scope: '/',
       display: 'standalone', background_color: '#ffffff', theme_color: '#12204A',
       orientation: 'any', icons

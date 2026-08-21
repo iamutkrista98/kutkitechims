@@ -2006,7 +2006,6 @@ async function loadBrandingView() {
   const { settings } = await api('/api/settings/public', { cache: 'no-store' });
   document.getElementById('brand-name').value = settings.schoolName||'';
   document.getElementById('brand-tagline-input').value = settings.tagline||'';
-  document.getElementById('brand-petty-limit').value = settings.pettyCashLimit ?? '';
   setBrandMarks('#brand-logo-preview', settings.schoolName||'School', settings.hasLogo);
 }
 async function submitBranding() {
@@ -2017,13 +2016,17 @@ async function submitBranding() {
     loadBrandingView();
   } catch(err) { toast(err.message, 'error'); }
 }
+// Petty cash limit setting lives on the Petty Cash view itself (rather than
+// Branding) since that's where it's actually used — but it's still an
+// admin-only control, gated the same way as everywhere else in the app via
+// the .admin-only class (see applyRoleVisibility()).
 async function submitPettyLimit() {
-  const val = document.getElementById('brand-petty-limit').value;
+  const val = document.getElementById('petty-limit-input').value;
   if (val === '' || Number(val) < 0) { toast('Enter a valid, non-negative petty cash limit.', 'error'); return; }
   try {
     await api('/api/settings', { method:'PATCH', body:JSON.stringify({ pettyCashLimit: Number(val) }) });
     toast('Petty cash limit updated.', 'success');
-    loadBrandingView();
+    loadPetty();
   } catch(err) { toast(err.message, 'error'); }
 }
 async function uploadBrandLogo() {
@@ -2410,6 +2413,9 @@ async function loadPetty() {
     PETTY_CASH_LIMIT = settingsData.settings.pettyCashLimit || 5000;
     document.getElementById('petty-limit-text').textContent = `Rs. ${PETTY_CASH_LIMIT.toLocaleString()} per expense.`;
     document.getElementById('petty-limit-banner').classList.remove('hidden');
+    // The limit-setting card itself is admin-only (gated via .admin-only in
+    // markup) — only bother populating its field when it's actually visible.
+    if (ME.role === 'admin') document.getElementById('petty-limit-input').value = settingsData.settings.pettyCashLimit ?? '';
   } catch {}
   populateFilterSelect('petty-filter-dept', DEPARTMENTS, 'All departments');
   const params = new URLSearchParams();

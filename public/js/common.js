@@ -443,6 +443,7 @@ function setBrandMarks(selector, schoolName, hasLogo) {
     el.textContent = ini;
     el.classList.remove('has-logo');
   });
+  applyBrandedInstallMeta(schoolName, hasLogo);
   if (!hasLogo) return;
   const src = `/api/images/logo?t=${Date.now()}`;
   els.forEach(el => {
@@ -454,6 +455,22 @@ function setBrandMarks(selector, schoolName, hasLogo) {
     img.onerror = () => {}; // never inserted — element keeps showing its initials
     img.src = src;
   });
+}
+
+// Keeps the "Add to Home Screen" name/icon in sync with the school's own
+// branding, since these come from static <meta>/<link> tags in the HTML
+// that iOS Safari reads directly (unlike Android/Chrome, which reads the
+// dynamic /manifest.json — see server.js). Called every time setBrandMarks
+// runs, so this stays current on every page that applies branding.
+function applyBrandedInstallMeta(schoolName, hasLogo) {
+  const titleMeta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+  if (titleMeta && schoolName) titleMeta.setAttribute('content', schoolName);
+  if (hasLogo) {
+    const touchIcon = document.querySelector('link[rel="apple-touch-icon"]');
+    if (touchIcon) touchIcon.setAttribute('href', `/api/images/logo?t=${Date.now()}`);
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon) favicon.setAttribute('href', `/api/images/logo?t=${Date.now()}`);
+  }
 }
 
 // ── PWA install support ──

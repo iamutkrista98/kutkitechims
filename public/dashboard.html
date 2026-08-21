@@ -511,12 +511,6 @@
           <div class="field"><label>Tagline / subtitle</label><input type="text" id="brand-tagline-input" placeholder="e.g. Inventory & Asset Management"></div>
           <button class="btn btn-primary" onclick="submitBranding()">Save branding</button>
         </div>
-
-        <div class="card card-pad" style="max-width:560px;margin-top:20px;">
-          <div class="section-head"><div><h3>Petty cash settings</h3><div class="sub">Controls the per-expense ceiling before a formal procurement request is required</div></div></div>
-          <div class="field"><label>Petty cash limit (Rs.)</label><input type="number" id="brand-petty-limit" min="0" step="any" placeholder="e.g. 5000"></div>
-          <button class="btn btn-primary" onclick="submitPettyLimit()">Save limit</button>
-        </div>
       </section>
 
       <!-- ══ STOCKING PLANS ══ -->
@@ -563,6 +557,11 @@
 
       <!-- ══ PETTY CASH ══ -->
       <section id="view-petty" class="hidden">
+        <div class="card card-pad admin-only hidden" style="max-width:560px;margin-bottom:20px;">
+          <div class="section-head"><div><h3>Petty cash settings</h3><div class="sub">Controls the per-expense ceiling before a formal procurement request is required</div></div></div>
+          <div class="field"><label>Petty cash limit (Rs.)</label><input type="number" id="petty-limit-input" min="0" step="any" placeholder="e.g. 5000"></div>
+          <button class="btn btn-primary" onclick="submitPettyLimit()">Save limit</button>
+        </div>
         <div class="card card-pad">
           <div class="section-head">
             <div><h3>Petty Cash Expenses</h3><div class="sub" id="petty-sub">Small day-to-day purchases · pending your review</div></div>
